@@ -14,7 +14,7 @@ namespace WebAPI.Controllers
 {
     //aqui definimos a rota que caso acessemos pelo httpget extrairemos/inseriremos as informações
     [Route("api/[controller]")]
-    //quando a rota está como [controller] ela vai entender qual é de acordo com o nome do controller, nesse caso seria a mesma coisa que "api/department"
+    //quando a rota está como [controller] ela vai entender qual é de acordo com o nome do controller, nesse caso seria a mesma coisa que "api/employee"
     [ApiController]
     public class EmployeeController : ControllerBase
     {
