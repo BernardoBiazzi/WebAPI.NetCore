@@ -12,7 +12,7 @@ namespace WebAPI.Models
         public string EmployeeName { get; set; }
         public string Department { get; set; }
         public string DateOfJoining { get; set; }
-        public string PhotFile { get; set; }
+        public string PhotoFileName { get; set; }
 
     }
 }

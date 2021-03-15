@@ -27,7 +27,7 @@ namespace WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             //Esses caras aqui dentro fazem com que a API retorne um JSON do jeito que precisamos.
-            //Vale lembrar que essa aplicação precisa dos nugets packs: Mvc.NewtonsoftJson 3.1.9 e do Systen.Data.SqlClient
+            //Vale lembrar que essa aplicação precisa dos nugets packs: Mvc.NewtonsoftJson 3.1.9 e do System.Data.SqlClient
 
             //Enable CORS
             services.AddCors(c => 
