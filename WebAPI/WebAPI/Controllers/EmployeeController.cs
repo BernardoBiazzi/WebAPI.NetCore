@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
 using System.Data;
 using WebAPI.Models;
+using HttpGPPD;
 
 namespace WebAPI.Controllers
 {
@@ -18,86 +19,37 @@ namespace WebAPI.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        private HttpServices HttpServices = new HttpServices();
         public EmployeeController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
-        //Função que possobilita extrairmos as informações da tabela que quisermos.
         [HttpGet]
         public JsonResult Get()
         {
-            //Daqui pra baixo estamos criando a conexão com a tabela do banco de dados que queremos extrair as informações
-            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon"); //EmployeeAppCon está definido no appsettings.json
-            SqlConnection myCon = new SqlConnection(sqlDataSource);
             //aqui determinamos quais elementos da tabela queremos extrair:
             string query = @"select EmployeeID, EmployeeName, Department, DateOfJoining, PhotoFileName from dbo.Employee";
-            //------------------------------------------------------------------------------------------------------------
-            SqlCommand myCommand = new SqlCommand(query, myCon);
-
-            SqlDataReader myReader;
-            DataTable table = new DataTable();
-
-            using (myCon)
-            {
-                myCon.Open();
-                using (myCommand)
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-                    myReader.Close();
-                    myCon.Close();
-                }
-            }
-
-            //aqui retornamos as informações em formato JSON
-            return new JsonResult(table);
-            //--------------------------
+            //aqui chamamos a função GET do HttpGPPD enviando a query
+            return new JsonResult(HttpServices.Get(query, _configuration));
         }
 
-        //Função que possibilita inserir valores na tabela que quisermos.
         [HttpPost]
         public JsonResult Post(Employee employee)
         {
-            //Daqui pra baixo estamos criando a conexão com a tabela do banco de dados que queremos inserir as informações
-            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon"); //EmployeeAppCon está definido no appsettings.json
-            SqlConnection myCon = new SqlConnection(sqlDataSource);
             //aqui determinamos quais valores iremos inserir na tabela:
             string query = @"insert into dbo.Employee values
                             ('" + employee.EmployeeName + @"', 
                             '" + employee.Department + @"', 
                             '" + employee.DateOfJoining + @"', 
                             '" + employee.PhotoFileName + @"')";
-            //-------------------------------------------
-            SqlCommand myCommand = new SqlCommand(query, myCon);
-
-            SqlDataReader myReader;
-            DataTable table = new DataTable();
-
-            using (myCon)
-            {
-                myCon.Open();
-                using (myCommand)
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-                    myReader.Close();
-                    myCon.Close();
-                }
-            }
-
-            //aqui retornamos um aviso de sucesso na inserção dos dados
-            return new JsonResult("Added Succesfully");
-            //-----------------------------------------
+            //aqui chamamos a função POST do HttpGPPD enviando a query
+            return new JsonResult(HttpServices.Post(query, _configuration));
         }
 
-        //Função que possibilita atualizar valores na tabela que quisermos.
         [HttpPut]
         public JsonResult Put(Employee employee)
         {
-            //Daqui pra baixo estamos criando a conexão com a tabela do banco de dados que queremos alterar as informações
-            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon"); //EmployeeAppCon está definido no appsettings.json
-            SqlConnection myCon = new SqlConnection(sqlDataSource);
             //aqui determinamos quais valores iremos alterar na tabela:
             string query = @"
                             update dbo.Employee set
@@ -107,62 +59,21 @@ namespace WebAPI.Controllers
                             PhotoFileName = '" + employee.PhotoFileName + @"'
                             where EmployeeID = " + employee.EmployeeID + @"
                             ";
-            //-------------------------------------------
-            SqlCommand myCommand = new SqlCommand(query, myCon);
-
-            SqlDataReader myReader;
-            DataTable table = new DataTable();
-
-            using (myCon)
-            {
-                myCon.Open();
-                using (myCommand)
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-                    myReader.Close();
-                    myCon.Close();
-                }
-            }
-
-            //aqui retornamos um aviso de sucesso no update dos dados
-            return new JsonResult("Updated Succesfully");
-            //------------------------------------------
+            //aqui chamamos a função PUT do HttpGPPD enviando a query
+            return new JsonResult(HttpServices.Put(query, _configuration));
         }
 
-        //Função que possibilita deletar a item tabela que quisermos -> quando queremos passar a informação pela url precisamos adicionar esse ("{info}")
+        //quando queremos passar a informação pela url precisamos adicionar esse ("{info}")
         [HttpDelete("{id}")]
         public JsonResult Delete(int id)
         {
-            //Daqui pra baixo estamos criando a conexão com a tabela do banco de dados que remover um item
-            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon"); //EmployeeAppCon está definido no appsettings.json
-            SqlConnection myCon = new SqlConnection(sqlDataSource);
             //aqui determinamos qual item da tabela iremos remover
             string query = @"
                             delete from dbo.Employee
                             where EmployeeID = " + id + @"
                             ";
-            //-------------------------------------------
-            SqlCommand myCommand = new SqlCommand(query, myCon);
-
-            SqlDataReader myReader;
-            DataTable table = new DataTable();
-
-            using (myCon)
-            {
-                myCon.Open();
-                using (myCommand)
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-                    myReader.Close();
-                    myCon.Close();
-                }
-            }
-
-            //aqui retornamos um aviso de sucesso na remoção de item da tabela
-            return new JsonResult("Deleted Succesfully");
-            //------------------------------------------
+            //aqui chamamos a função DELETE do HttpGPPD enviando a query
+            return new JsonResult(HttpServices.Delete(query, _configuration));
         }
     }
 }
